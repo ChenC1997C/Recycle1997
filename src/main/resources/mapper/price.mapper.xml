@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qianfeng.mapper.PriceMapper">
+
+    <!--通过损伤id数组查找折损金额-->
+    <select id="queryDiscounts" resultType="java.lang.Integer">
+        select discount_rate from tb_discount where discount_id in
+            <foreach collection="list" item="item" open="(" separator="," close=")">
+                 #{item}
+            </foreach>
+    </select>
+    <select id="querySumDiscounts" resultType="java.lang.Integer">
+        select SUM(discount_rate)  from tb_discount where discount_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="queryDamageTypes" resultType="java.lang.String">
+        select damage_info from tb_damage da left join
+        tb_discount di on da.damage_id=di.damage_id
+        where discount_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

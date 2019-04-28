@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qianfeng.mapper.DamageMapper">
+    <!--查找手机型号对应的损伤类型-->
+    <resultMap id="queryTypeInfoResultMap" type="com.qianfeng.po.TypePo">
+        <result property="typeId" column="type_id" javaType="java.lang.Integer"/>
+        <result property="typeName" column="type_name" javaType="java.lang.String"/>
+        <collection property="damagePOS" column="type_id" ofType="com.qianfeng.po.DamagePO"  select="queryDamageInfo">
+        </collection>
+    </resultMap>
+    <!--查找手机型号对应的损伤详情-->
+    <resultMap id="queryDamageInfoResultMap" type="com.qianfeng.po.DamagePO">
+        <id property="damageId" column="damage_id" javaType="java.lang.Long"/>
+        <result property="damageInfo" column="damage_info" javaType="java.lang.String"/>
+        <result property="infoDescribe" column="info_describe" javaType="java.lang.String"/>
+        <result property="discountRate" column="discount_rate" javaType="java.lang.Double"/>
+    </resultMap>
+    <select id="queryTypeInfo" resultMap="queryTypeInfoResultMap">
+        select ty.type_id , ty.type_name   from tb_damage da
+        left join  tb_discount di
+        on di.damage_id=da.damage_id
+        left join tb_phone ph
+        on di.phone_id=ph.phone_id
+        left join tb_type ty
+        on da.type_id=ty.type_id
+        where ph.phone_id=#{phoneId}
+        group by ty.type_id
+    </select>
+    <select id="queryDamageInfo" resultMap="queryDamageInfoResultMap">
+        select da.damage_id ,da.damage_info,da.info_describe,di.discount_rate from tb_damage da
+        left join  tb_discount di
+        on di.damage_id=da.damage_id
+        left join tb_phone ph
+        on di.phone_id=ph.phone_id
+        left join tb_type ty
+        on da.type_id=ty.type_id
+        where da.type_id=#{type_id}
+    </select>
+</mapper>
